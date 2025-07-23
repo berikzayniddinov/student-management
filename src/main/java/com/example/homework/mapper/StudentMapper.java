@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
 public interface StudentMapper {
     Student toEntity(StudentRequestDTO dto);
     StudentResponseDTO toDto(Student student);
-    StudentRequestDTO toRequestDto(Student student); // добавлен метод
+    StudentRequestDTO toRequestDto(Student student);
 }
