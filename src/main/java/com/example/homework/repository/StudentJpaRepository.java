@@ -25,4 +25,7 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
     List<Student> findByLastNameNative(@Param("lastName") String lastName);
 
     Page<Student> findAll(Pageable pageable);
+
+    @Query("SELECT DISTINCT s FROM Student s LEFT JOIN s.books b WHERE b.title = :title")
+    List<Student> findStudentsByBookTitle(@Param("title") String title);
 }

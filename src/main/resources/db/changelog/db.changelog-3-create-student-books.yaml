@@ -1,0 +1,92 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: berik
+      changes:
+        - createTable:
+            tableName: student_books
+            schemaName: adamant
+            columns:
+              - column:
+                  name: student_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: student_books
+            baseColumnNames: student_id
+            referencedTableName: students
+            referencedColumnNames: id
+            constraintName: fk_student_books_student
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            baseTableSchemaName: adamant
+            referencedTableSchemaName: adamant
+        - addForeignKeyConstraint:
+            baseTableName: student_books
+            baseColumnNames: book_id
+            referencedTableName: book
+            referencedColumnNames: id
+            constraintName: fk_student_books_book
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            baseTableSchemaName: adamant
+            referencedTableSchemaName: adamant
+
+  - changeSet:
+      id: 3
+      author: berik
+      changes:
+        - insert:
+            tableName: book
+            schemaName: adamant
+            columns:
+              - column:
+                  name: title
+                  value: "Clean Code"
+              - column:
+                  name: author
+                  value: "Robert C. Martin"
+              - column:
+                  name: year
+                  valueNumeric: 2008
+              - column:
+                  name: isbn
+                  value: "9780132350684"
+        - insert:
+            tableName: book
+            schemaName: adamant
+            columns:
+              - column:
+                  name: title
+                  value: "Effective Java"
+              - column:
+                  name: author
+                  value: "Joshua Bloch"
+              - column:
+                  name: year
+                  valueNumeric: 2018
+              - column:
+                  name: isbn
+                  value: "4780134685991"
+        - insert:
+            tableName: book
+            schemaName: adamant
+            columns:
+              - column:
+                  name: title
+                  value: "The Pragmatic Programmer"
+              - column:
+                  name: author
+                  value: "Andrew Hunt"
+              - column:
+                  name: year
+                  valueNumeric: 1999
+              - column:
+                  name: isbn
+                  value: "9780201616224"

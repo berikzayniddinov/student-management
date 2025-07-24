@@ -2,6 +2,7 @@ package com.example.homework.controller;
 
 import com.example.homework.dto.StudentRequestDTO;
 import com.example.homework.dto.StudentResponseDTO;
+import com.example.homework.impl.DatabaseStudentServiceImpl;
 import com.example.homework.model.Student;
 import com.example.homework.repository.StudentJpaRepository;
 import com.example.homework.service.StudentService;
@@ -177,5 +178,13 @@ public class StudentController {
         }
 
         return dbService.getPagedStudents(page, size, sortBy, direction);
+    }
+
+    @GetMapping("/by-book-title")
+    public ResponseEntity<List<Student>> getStudentsByBookTitle(@RequestParam String title) {
+        if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
+            return ResponseEntity.ok(dbImpl.getStudentsByBookTitle(title));
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

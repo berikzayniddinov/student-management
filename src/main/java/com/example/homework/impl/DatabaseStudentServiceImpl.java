@@ -5,6 +5,7 @@ import com.example.homework.dto.StudentResponseDTO;
 import com.example.homework.mapper.StudentMapper;
 import com.example.homework.model.Student;
 import com.example.homework.repository.DatabaseStudentDAO;
+import com.example.homework.repository.StudentJpaRepository;
 import com.example.homework.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +25,7 @@ public class DatabaseStudentServiceImpl implements StudentService {
 
     private final DatabaseStudentDAO repository;
     private final StudentMapper studentMapper;
+    private final StudentJpaRepository studentJpaRepository;
 
     @Override
     public List<StudentResponseDTO> findAllStudent(StudentRequestDTO requestDTO) {
@@ -69,6 +71,10 @@ public class DatabaseStudentServiceImpl implements StudentService {
 
         Page<Student> students = repository.findAll(pageable);
         return students.map(studentMapper::toDto);
+    }
+
+    public List<Student> getStudentsByBookTitle(String title) {
+        return studentJpaRepository.findStudentsByBookTitle(title);
     }
 
 }

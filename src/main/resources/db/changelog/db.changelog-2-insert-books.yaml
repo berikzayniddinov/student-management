@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: berik
+      changes:
+        - insert:
+            tableName: book
+            columns:
+              - column:
+                  name: title
+                  value: Clean Code
+              - column:
+                  name: author
+                  value: Robert C. Martin
+              - column:
+                  name: year
+                  valueNumeric: 2008
+              - column:
+                  name: isbn
+                  value: 9780132350884
+
+        - insert:
+            tableName: book
+            columns:
+              - column:
+                  name: title
+                  value: Effective Java
+              - column:
+                  name: author
+                  value: Joshua Bloch
+              - column:
+                  name: year
+                  valueNumeric: 2018
+              - column:
+                  name: isbn
+                  value: 9780134685991
