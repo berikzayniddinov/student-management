@@ -34,7 +34,7 @@ public class LoggingAspect {
             throw e;
         }
 
-        long endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis(); //fdhsgf
         logger.info("Exiting method: " + className + "." + methodName + "() in " + (endTime - startTime) + "ms");
 
         return result;
