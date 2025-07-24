@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("dbService")
@@ -77,4 +78,15 @@ public class DatabaseStudentServiceImpl implements StudentService {
         return studentJpaRepository.findStudentsByBookTitle(title);
     }
 
+    public Optional<StudentResponseDTO> getStudentWithBooksByEmail(String email) {
+        return studentJpaRepository.findStudentWithBooksByEmail(email)
+                .map(studentMapper::toResponseDTOWithBooks); // если books есть в DTO
+    }
+
+    public List<StudentResponseDTO> searchByBookTitleAndNameAndEmail(String title, String name, String email) {
+        List<Student> students = studentJpaRepository.searchByBookTitleAndNameAndEmail(title, name, email);
+        return students.stream()
+                .map(studentMapper::toResponseDTOWithBooks)
+                .collect(Collectors.toList());
+    }
 }

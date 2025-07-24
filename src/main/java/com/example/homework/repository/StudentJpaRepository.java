@@ -28,4 +28,18 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
 
     @Query("SELECT DISTINCT s FROM Student s LEFT JOIN s.books b WHERE b.title = :title")
     List<Student> findStudentsByBookTitle(@Param("title") String title);
+
+    @Query("SELECT s FROM Student s LEFT JOIN FETCH s.books WHERE s.email = :email")
+    Optional<Student> findStudentWithBooksByEmail(@Param("email") String email);
+
+    @Query("""
+    SELECT DISTINCT s FROM Student s
+    LEFT JOIN FETCH s.books b
+    WHERE LOWER(s.email) LIKE LOWER(CONCAT('%', :email, '%'))
+      AND LOWER(s.firstName) LIKE LOWER(CONCAT('%', :name, '%'))
+      AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))
+""")
+    List<Student> searchByBookTitleAndNameAndEmail(@Param("title") String title,
+                                                   @Param("name") String name,
+                                                   @Param("email") String email);
 }

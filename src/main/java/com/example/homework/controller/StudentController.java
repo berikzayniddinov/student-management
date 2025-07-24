@@ -3,6 +3,7 @@ package com.example.homework.controller;
 import com.example.homework.dto.StudentRequestDTO;
 import com.example.homework.dto.StudentResponseDTO;
 import com.example.homework.impl.DatabaseStudentServiceImpl;
+import com.example.homework.mapper.StudentMapper;
 import com.example.homework.model.Student;
 import com.example.homework.repository.StudentJpaRepository;
 import com.example.homework.service.StudentService;
@@ -25,15 +26,17 @@ public class StudentController {
     private final StudentService inMemoryService;
     private final StudentService dbService;
     private final StudentJpaRepository studentRepository;
+    private final StudentMapper studentMapper;
 
     public StudentController(
             @Qualifier("inMemoryService") StudentService inMemoryService,
             @Qualifier("dbService") StudentService dbService,
-            StudentJpaRepository studentRepository
+            StudentJpaRepository studentRepository, StudentMapper studentMapper
     ) {
         this.inMemoryService = inMemoryService;
         this.dbService = dbService;
         this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
     }
 
     private StudentService chooseService(String source) {
@@ -186,5 +189,28 @@ public class StudentController {
             return ResponseEntity.ok(dbImpl.getStudentsByBookTitle(title));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/by-email-book")
+    public ResponseEntity<StudentResponseDTO> getStudentWithBooksByEmail(@RequestParam String email) {
+        if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
+            return dbImpl.getStudentWithBooksByEmail(email)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        }
+        return ResponseEntity.status(500).build();
+    }
+
+    @GetMapping("/by-book-title-name")
+    public ResponseEntity<List<StudentResponseDTO>> getStudentsByBookTitleAndNameAndEmail(
+            @RequestParam(required = false, defaultValue = "") String title,
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "") String email) {
+        if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
+            List<StudentResponseDTO> result = dbImpl.searchByBookTitleAndNameAndEmail(title, name, email);
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.status(500).build();
     }
 }
