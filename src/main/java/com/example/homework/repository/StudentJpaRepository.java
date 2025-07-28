@@ -29,7 +29,18 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
     @Query("SELECT DISTINCT s FROM Student s LEFT JOIN s.books b WHERE b.title = :title")
     List<Student> findStudentsByBookTitle(@Param("title") String title);
 
-    @Query("SELECT s FROM Student s LEFT JOIN FETCH s.books WHERE s.email = :email")
+    @Query(value = "SELECT s.* FROM students s " +
+            "LEFT JOIN adamant.student_books sb ON s.id = sb.student_id " +
+            "LEFT JOIN adamant.book b ON sb.book_id = b.id " +
+            "WHERE s.email = :email",
+            nativeQuery = true)
+        //todo write native query (превратить его в нативный куери)
+    //todo переделать manytomany to oneToMany
+    //Хикари Пул. Idle connections
+    // todo прочитать что такое xms xmx
+    //todo почитать jpa, entityContext first level cache Hibernate
+
+    // to do почитать jvm heap
     Optional<Student> findStudentWithBooksByEmail(@Param("email") String email);
 
     @Query("""
