@@ -26,7 +26,17 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
 
     Page<Student> findAll(Pageable pageable);
 
-    @Query("SELECT DISTINCT s FROM Student s LEFT JOIN s.books b WHERE b.title = :title")
+
+    @Query("""
+    SELECT s FROM Student s
+    LEFT JOIN s.books b
+    WHERE b.title = :title
+      AND s.id IN (
+          SELECT s2.id FROM Student s2
+          LEFT JOIN s2.books b2
+          WHERE b2.title = :title
+      )
+""")
     List<Student> findStudentsByBookTitle(@Param("title") String title);
 
     @Query(value = "SELECT s.* FROM students s " +
@@ -34,23 +44,24 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
             "LEFT JOIN adamant.book b ON sb.book_id = b.id " +
             "WHERE s.email = :email",
             nativeQuery = true)
-        //todo write native query (превратить его в нативный куери)
-    //todo переделать manytomany to oneToMany
-    //Хикари Пул. Idle connections
-    // todo прочитать что такое xms xmx
-    //todo почитать jpa, entityContext first level cache Hibernate
 
-    // to do почитать jvm heap
     Optional<Student> findStudentWithBooksByEmail(@Param("email") String email);
 
     @Query("""
-    SELECT DISTINCT s FROM Student s
+    SELECT s FROM Student s
     LEFT JOIN FETCH s.books b
-    WHERE LOWER(s.email) LIKE LOWER(CONCAT('%', :email, '%'))
-      AND LOWER(s.firstName) LIKE LOWER(CONCAT('%', :name, '%'))
-      AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))
+    WHERE s.id IN (
+        SELECT s2.id FROM Student s2
+        JOIN s2.books b2
+        WHERE LOWER(s2.email) LIKE LOWER(CONCAT('%', :email, '%'))
+          AND LOWER(s2.firstName) LIKE LOWER(CONCAT('%', :name, '%'))
+          AND LOWER(b2.title) LIKE LOWER(CONCAT('%', :title, '%'))
+    )
 """)
     List<Student> searchByBookTitleAndNameAndEmail(@Param("title") String title,
                                                    @Param("name") String name,
                                                    @Param("email") String email);
+
+    @Query("SELECT DISTINCT s FROM Student s LEFT JOIN FETCH s.books")
+    List<Student> findAllWithBooks();
 }

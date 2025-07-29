@@ -13,10 +13,3 @@ public class HomeworkApplication {
 	}
 
 }
-//Injection point
-// Spring DATA
-// Hibernate
-// JPA
-// заимплементить 3 метода куери в спринг дате
-// 1 метод куери 2 jpql куери 3 нативный куери
-// что такое runtime vs compile time
