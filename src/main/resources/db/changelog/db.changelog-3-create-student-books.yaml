@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 5
       author: berik
       changes:
         - createTable:
@@ -39,7 +39,7 @@ databaseChangeLog:
             referencedTableSchemaName: adamant
 
   - changeSet:
-      id: 3
+      id: 6
       author: berik
       changes:
         - insert:

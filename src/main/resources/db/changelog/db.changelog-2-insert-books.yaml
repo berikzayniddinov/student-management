@@ -1,9 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 4
       author: berik
       changes:
         - insert:
+            schemaName: adamant
             tableName: book
             columns:
               - column:

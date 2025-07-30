@@ -1,11 +1,12 @@
 package com.example.homework.elasticsearch;
 
 import lombok.*;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.List;
-
+@Profile("with-elastic")
 @Document(indexName = "students")
 @Data
 @NoArgsConstructor

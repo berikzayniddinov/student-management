@@ -6,10 +6,11 @@ import com.example.homework.service.StudentElasticService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Profile("with-elastic")
 @Component
 @RequiredArgsConstructor
 public class ElasticsearchSyncRunner implements ApplicationRunner {

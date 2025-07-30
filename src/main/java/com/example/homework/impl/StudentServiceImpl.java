@@ -6,10 +6,11 @@ import com.example.homework.repository.StudentElasticRepository;
 import com.example.homework.service.StudentElasticService;
 import com.example.homework.mapper.StudentDocumentMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Profile("with-elastic")
 @Service("studentElasticService")
 @RequiredArgsConstructor
 public class StudentServiceImpl implements StudentElasticService {
@@ -28,6 +29,7 @@ public class StudentServiceImpl implements StudentElasticService {
         repository.deleteById(String.valueOf(id));
     }
 
+    @Profile("with-elastic")
     @Override
     public List<StudentDocument> findByEmail(String email) {
         return repository.findByEmail(email);

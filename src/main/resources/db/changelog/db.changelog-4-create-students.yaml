@@ -1,11 +1,15 @@
 databaseChangeLog:
   - changeSet:
-      id: 3
+      id: 1
+      author: berik
+      changes:
+  - changeSet:
+      id: 2
       author: berik
       changes:
         - createTable:
             schemaName: adamant
-            tableName: book
+            tableName: students
             columns:
               - column:
                   name: id
@@ -15,18 +19,19 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: title
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: author
+                  name: first_name
                   type: VARCHAR(255)
               - column:
-                  name: year
-                  type: INT
+                  name: last_name
+                  type: VARCHAR(255)
               - column:
-                  name: isbn
-                  type: VARCHAR(50)
+                  name: date_of_birth
+                  type: DATE
+              - column:
+                  name: email
+                  type: VARCHAR(255)
                   constraints:
                     unique: true
+              - column:
+                  name: age
+                  type: INT
