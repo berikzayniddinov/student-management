@@ -5,7 +5,6 @@ import com.example.homework.dto.StudentResponseDTO;
 import com.example.homework.mapper.StudentMapper;
 import com.example.homework.model.Student;
 import com.example.homework.repository.DatabaseStudentDAO;
-import com.example.homework.repository.StudentJpaRepository;
 import com.example.homework.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,10 +22,8 @@ import java.util.stream.Collectors;
 @Qualifier("dbService")
 @AllArgsConstructor
 public class DatabaseStudentServiceImpl implements StudentService {
-
     private final DatabaseStudentDAO repository;
     private final StudentMapper studentMapper;
-    private final StudentJpaRepository studentJpaRepository;
 
     @Override
     public List<StudentResponseDTO> findAllStudent(StudentRequestDTO requestDTO) {
@@ -74,19 +71,64 @@ public class DatabaseStudentServiceImpl implements StudentService {
         return students.map(studentMapper::toDto);
     }
 
-    public List<Student> getStudentsByBookTitle(String title) {
-        return studentJpaRepository.findStudentsByBookTitle(title);
+    public List<StudentResponseDTO> getStudentsByBookTitle(String title) {
+        return repository.findStudentsByBookTitle(title)
+                .stream()
+                .map(studentMapper::toResponseDTOWithBooks)
+                .collect(Collectors.toList());
     }
 
     public Optional<StudentResponseDTO> getStudentWithBooksByEmail(String email) {
-        return studentJpaRepository.findStudentWithBooksByEmail(email)
-                .map(studentMapper::toResponseDTOWithBooks); // если books есть в DTO
+        return repository.findStudentWithBooksByEmail(email)
+                .map(studentMapper::toResponseDTOWithBooks);
     }
 
     public List<StudentResponseDTO> searchByBookTitleAndNameAndEmail(String title, String name, String email) {
-        List<Student> students = studentJpaRepository.searchByBookTitleAndNameAndEmail(title, name, email);
-        return students.stream()
+        return repository.searchByBookTitleAndNameAndEmail(title, name, email)
+                .stream()
                 .map(studentMapper::toResponseDTOWithBooks)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public boolean emailExists(String email) {
+        return repository.emailExists(email);
+    }
+
+    @Override
+    public Optional<StudentResponseDTO> getByEmail(String email) {
+        return repository.getByEmail(email)
+                .map(studentMapper::toDto);
+    }
+
+    @Override
+    public List<StudentResponseDTO> getByAgeGreaterThan(int age) {
+        return repository.getByAgeGreaterThan(age)
+                .stream()
+                .map(studentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentResponseDTO> getByFirstName(String name) {
+        return repository.getByFirstName(name)
+                .stream()
+                .map(studentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentResponseDTO> getByLastName(String name) {
+        return repository.getByLastName(name)
+                .stream()
+                .map(studentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentResponseDTO> getByBookTitle(String title) {
+        return repository.getByBookTitle(title)
+                .stream()
+                .map(studentMapper::toDto)
                 .collect(Collectors.toList());
     }
 }

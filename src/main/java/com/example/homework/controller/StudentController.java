@@ -3,9 +3,6 @@ package com.example.homework.controller;
 import com.example.homework.dto.StudentRequestDTO;
 import com.example.homework.dto.StudentResponseDTO;
 import com.example.homework.impl.DatabaseStudentServiceImpl;
-import com.example.homework.mapper.StudentMapper;
-import com.example.homework.model.Student;
-import com.example.homework.repository.StudentJpaRepository;
 import com.example.homework.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,186 +15,104 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/students")
 public class StudentController {
 
-    private final StudentService inMemoryService;
     private final StudentService dbService;
-    private final StudentJpaRepository studentRepository;
-    private final StudentMapper studentMapper;
 
-    public StudentController(
-            @Qualifier("inMemoryService") StudentService inMemoryService,
-            @Qualifier("dbService") StudentService dbService,
-            StudentJpaRepository studentRepository, StudentMapper studentMapper
-    ) {
-        this.inMemoryService = inMemoryService;
+    public StudentController(@Qualifier("dbService") StudentService dbService) {
         this.dbService = dbService;
-        this.studentRepository = studentRepository;
-        this.studentMapper = studentMapper;
     }
 
-    private StudentService chooseService(String source) {
-        return "db".equalsIgnoreCase(source) ? dbService : inMemoryService;
-    }
-
-    @Operation(
-            summary = "Получение всех студентов",
-            description = "Возвращает список всех студентов из выбранного источника данных (в памяти или база данных)."
-    )
+    @Operation(summary = "Получение всех студентов")
     @GetMapping
-    public List<StudentResponseDTO> findAllStudents(
-            @Parameter(description = "Data source: 'memory' or 'db'", example = "db")
-            @RequestParam(defaultValue = "memory") String source
-    ) {
-        return chooseService(source).findAllStudent(new StudentRequestDTO());
+    public List<StudentResponseDTO> findAllStudents() {
+        return dbService.findAllStudent(new StudentRequestDTO());
     }
 
-    @Operation(summary = "Save a new student", description = "Saves a new student to selected source.")
+    @Operation(summary = "Сохранение нового студента")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Student successfully saved"),
-            @ApiResponse(responseCode = "400", description = "Student with email already exists")
+            @ApiResponse(responseCode = "200", description = "Student успешно сохранён"),
+            @ApiResponse(responseCode = "400", description = "Студент с таким email уже существует")
     })
     @PostMapping("/save")
-    public ResponseEntity<?> saveStudent(
-            @Parameter(description = "Data source: 'memory' or 'db'", example = "db")
-            @RequestParam(defaultValue = "memory") String source,
-            @Valid @RequestBody StudentRequestDTO studentDTO) {
-
-        if (studentRepository.findByEmail(studentDTO.getEmail()).isPresent()) {
+    public ResponseEntity<?> saveStudent(@Valid @RequestBody StudentRequestDTO studentDTO) {
+        if (dbService.emailExists(studentDTO.getEmail())) {
             return ResponseEntity.badRequest().body("Student with email already exists.");
         }
 
-        StudentResponseDTO savedStudent = chooseService(source).saveStudent(studentDTO);
+        StudentResponseDTO savedStudent = dbService.saveStudent(studentDTO);
         return ResponseEntity.ok(savedStudent);
     }
 
-    @Operation(
-            summary = "Поиск студента по email",
-            description = "Ищет и возвращает студента с указанным email из выбранного источника данных."
-    )
+    @Operation(summary = "Поиск по email")
     @GetMapping("/{email}")
-    public StudentResponseDTO findByEmail(
-            @Parameter(description = "Источник данных: 'memory' или 'db'", example = "db")
-            @RequestParam(defaultValue = "memory") String source,
-            @Parameter(description = "Email студента", example = "john@example.com")
-            @PathVariable String email) {
-        return chooseService(source).findByEmail(email);
+    public StudentResponseDTO findByEmail(@PathVariable String email) {
+        return dbService.findByEmail(email);
     }
 
-    @Operation(
-            summary = "Обновление информации о студенте",
-            description = "Обновляет данные студента по его email в выбранном источнике данных."
-    )
+    @Operation(summary = "Обновление студента")
     @PutMapping("/update")
-    public StudentResponseDTO updateStudent(
-            @Parameter(description = "Источник данных: 'memory' или 'db'", example = "db")
-            @RequestParam(defaultValue = "memory") String source,
-            @Valid @RequestBody StudentRequestDTO studentDTO) {
-        return chooseService(source).updateStudent(studentDTO);
+    public StudentResponseDTO updateStudent(@Valid @RequestBody StudentRequestDTO studentDTO) {
+        return dbService.updateStudent(studentDTO);
     }
 
-    @Operation(
-            summary = "Удаление студента по email",
-            description = "Удаляет студента с указанным email из выбранного источника данных."
-    )
+    @Operation(summary = "Удаление студента по email")
     @DeleteMapping("/delete/{email}")
-    public void deleteStudent(
-            @Parameter(description = "Источник данных: 'memory' или 'db'", example = "db")
-            @RequestParam(defaultValue = "memory") String source,
-            @Parameter(description = "Email студента", example = "john@example.com")
-            @PathVariable String email) {
-        chooseService(source).deleteStudent(email);
+    public void deleteStudent(@PathVariable String email) {
+        dbService.deleteStudent(email);
     }
 
-    @Operation(
-            summary = "Поиск студента напрямую из базы данных по email",
-            description = "Осуществляет прямой доступ к базе данных и возвращает студента по email, если он найден."
-    )
+    @Operation(summary = "Прямой поиск студента по email из БД")
     @GetMapping("/byEmail")
-    public ResponseEntity<Student> getByEmail(
-            @Parameter(description = "Email студента", example = "john@example.com")
-            @RequestParam String email) {
-        return studentRepository.findByEmail(email)
+    public ResponseEntity<StudentResponseDTO> getByEmail(@RequestParam String email) {
+        return dbService.getByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(
-            summary = "Найти студентов старше указанного возраста",
-            description = "Возвращает список студентов, возраст которых превышает заданное значение. Доступно только из базы данных."
-    )
+    @Operation(summary = "Студенты старше указанного возраста")
     @GetMapping("/ageGreaterThan/{age}")
     public List<StudentResponseDTO> getByAge(@PathVariable int age) {
-        return studentRepository.findByAgeGreaterThan(age)
-                .stream()
-                .map(studentMapper::toDto)
-                .toList();
+        return dbService.getByAgeGreaterThan(age);
     }
 
-    @Operation(
-            summary = "Поиск студентов по имени (JPQL)",
-            description = "Выполняет запрос JPQL для получения студентов по имени (first name)."
-    )
+    @Operation(summary = "Поиск по имени (JPQL)")
     @GetMapping("/firstName/{name}")
     public List<StudentResponseDTO> getByFirstName(@PathVariable String name) {
-        return studentRepository.findByFirstNameJPQL(name)
-                .stream()
-                .map(studentMapper::toDto)
-                .toList();
+        return dbService.getByFirstName(name);
     }
 
-    @Operation(
-            summary = "Поиск студентов по фамилии (Native SQL)",
-            description = "Выполняет нативный SQL-запрос для получения студентов по фамилии (last name)."
-    )
+    @Operation(summary = "Поиск по фамилии (Native SQL)")
     @GetMapping("/lastName/{name}")
     public List<StudentResponseDTO> getByLastName(@PathVariable String name) {
-        return studentRepository.findByLastNameNative(name)
-                .stream()
-                .map(studentMapper::toDto)
-                .toList();
+        return dbService.getByLastName(name);
     }
 
-
-    @Operation(
-            summary = "Постраничный список студентов",
-            description = "Позволяет получать студентов постранично с возможностью сортировки. Работает только с базой данных."
-    )
+    @Operation(summary = "Постраничный вывод студентов")
     @GetMapping("/paged")
     public Page<StudentResponseDTO> getPagedStudents(
-            @Parameter(description = "Номер страницы (начинается с 0)", example = "0")
             @RequestParam int page,
-            @Parameter(description = "Размер страницы (количество студентов на странице)", example = "10")
             @RequestParam int size,
-            @Parameter(description = "Поле для сортировки", example = "firstName")
             @RequestParam(defaultValue = "firstName") String sortBy,
-            @Parameter(description = "Направление сортировки: 'asc' или 'desc'", example = "asc")
-            @RequestParam(defaultValue = "asc") String direction,
-            @Parameter(description = "Источник данных, обязательно 'db'", example = "db")
-            @RequestParam(required = false, defaultValue = "db") String source
+            @RequestParam(defaultValue = "asc") String direction
     ) {
-        if (!"db".equalsIgnoreCase(source)) {
-            throw new UnsupportedOperationException("Pagination is only supported for 'db' source.");
-        }
-
         return dbService.getPagedStudents(page, size, sortBy, direction);
     }
 
+    @Operation(summary = "Поиск студентов по названию книги")
     @GetMapping("/by-book-title")
     public ResponseEntity<List<StudentResponseDTO>> getStudentsByBookTitle(@RequestParam String title) {
         if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
-            List<StudentResponseDTO> result = dbImpl.getStudentsByBookTitle(title)
-                    .stream()
-                    .map(studentMapper::toResponseDTOWithBooks)
-                    .toList();
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(dbImpl.getStudentsByBookTitle(title));
         }
         return ResponseEntity.badRequest().build();
     }
 
+    @Operation(summary = "Получить студента с книгами по email")
     @GetMapping("/by-email-book")
     public ResponseEntity<StudentResponseDTO> getStudentWithBooksByEmail(@RequestParam String email) {
         if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
@@ -208,16 +123,15 @@ public class StudentController {
         return ResponseEntity.status(500).build();
     }
 
+    @Operation(summary = "Поиск по названию книги, имени и email")
     @GetMapping("/by-book-title-name")
     public ResponseEntity<List<StudentResponseDTO>> getStudentsByBookTitleAndNameAndEmail(
-            @RequestParam(required = false, defaultValue = "") String title,
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "") String email) {
+            @RequestParam(defaultValue = "") String title,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String email) {
         if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
-            List<StudentResponseDTO> result = dbImpl.searchByBookTitleAndNameAndEmail(title, name, email);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(dbImpl.searchByBookTitleAndNameAndEmail(title, name, email));
         }
-
         return ResponseEntity.status(500).build();
     }
 }

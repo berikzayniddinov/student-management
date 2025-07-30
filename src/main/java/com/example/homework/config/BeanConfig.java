@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfig {
 
-    @Bean("inMemoryRepo")
-    public InMemoryStudentDAO inMemoryStudentDAO() {
-        return new InMemoryStudentDAO();
-    }
+//    @Bean("inMemoryRepo")
+//    public InMemoryStudentDAO inMemoryStudentDAO() {
+//        return new InMemoryStudentDAO();
+//    }
 
-    @Bean("databaseRepo")
-    public DatabaseStudentDAO databaseStudentDAO(StudentJpaRepository studentJpaRepository) {
-        return new DatabaseStudentDAO(studentJpaRepository);
-    }
+//    @Bean("databaseRepo")
+//    public DatabaseStudentDAO databaseStudentDAO(StudentJpaRepository studentJpaRepository) {
+//        return new DatabaseStudentDAO(studentJpaRepository);
+//    }
 }

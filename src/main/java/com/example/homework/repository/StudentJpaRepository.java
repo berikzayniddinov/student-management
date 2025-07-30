@@ -64,4 +64,10 @@ public interface StudentJpaRepository extends JpaRepository<Student, Long> {
 
     @Query("SELECT DISTINCT s FROM Student s LEFT JOIN FETCH s.books")
     List<Student> findAllWithBooks();
+
+    List<Student> findByFirstName(String name);
+
+    List<Student> findByLastName(String name);
+
+
 }
