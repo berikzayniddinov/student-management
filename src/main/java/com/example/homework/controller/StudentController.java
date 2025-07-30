@@ -130,10 +130,11 @@ public class StudentController {
             description = "Возвращает список студентов, возраст которых превышает заданное значение. Доступно только из базы данных."
     )
     @GetMapping("/ageGreaterThan/{age}")
-    public List<Student> getByAge(
-            @Parameter(description = "Минимальный возраст студентов", example = "20")
-            @PathVariable int age) {
-        return studentRepository.findByAgeGreaterThan(age);
+    public List<StudentResponseDTO> getByAge(@PathVariable int age) {
+        return studentRepository.findByAgeGreaterThan(age)
+                .stream()
+                .map(studentMapper::toDto)
+                .toList();
     }
 
     @Operation(
@@ -141,10 +142,11 @@ public class StudentController {
             description = "Выполняет запрос JPQL для получения студентов по имени (first name)."
     )
     @GetMapping("/firstName/{name}")
-    public List<Student> getByFirstName(
-            @Parameter(description = "Имя студента (first name)", example = "John")
-            @PathVariable String name) {
-        return studentRepository.findByFirstNameJPQL(name);
+    public List<StudentResponseDTO> getByFirstName(@PathVariable String name) {
+        return studentRepository.findByFirstNameJPQL(name)
+                .stream()
+                .map(studentMapper::toDto)
+                .toList();
     }
 
     @Operation(
@@ -152,10 +154,11 @@ public class StudentController {
             description = "Выполняет нативный SQL-запрос для получения студентов по фамилии (last name)."
     )
     @GetMapping("/lastName/{name}")
-    public List<Student> getByLastName(
-            @Parameter(description = "Фамилия студента (last name)", example = "Doe")
-            @PathVariable String name) {
-        return studentRepository.findByLastNameNative(name);
+    public List<StudentResponseDTO> getByLastName(@PathVariable String name) {
+        return studentRepository.findByLastNameNative(name)
+                .stream()
+                .map(studentMapper::toDto)
+                .toList();
     }
 
 
@@ -184,9 +187,13 @@ public class StudentController {
     }
 
     @GetMapping("/by-book-title")
-    public ResponseEntity<List<Student>> getStudentsByBookTitle(@RequestParam String title) {
+    public ResponseEntity<List<StudentResponseDTO>> getStudentsByBookTitle(@RequestParam String title) {
         if (dbService instanceof DatabaseStudentServiceImpl dbImpl) {
-            return ResponseEntity.ok(dbImpl.getStudentsByBookTitle(title));
+            List<StudentResponseDTO> result = dbImpl.getStudentsByBookTitle(title)
+                    .stream()
+                    .map(studentMapper::toResponseDTOWithBooks)
+                    .toList();
+            return ResponseEntity.ok(result);
         }
         return ResponseEntity.badRequest().build();
     }
