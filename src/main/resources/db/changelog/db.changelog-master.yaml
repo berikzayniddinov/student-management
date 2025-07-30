@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/db.changelog-2-insert-books.yaml
   - include:
       file: db/changelog/db.changelog-3-create-student-books.yaml
+  - include:
+      file: db/changelog/db.changelog-6-insert-students.yaml

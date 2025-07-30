@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-students-1
+      author: berik
+      changes:
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: John }
+              - column: { name: last_name, value: Doe }
+              - column: { name: date_of_birth, valueDate: 2000-01-01 }
+              - column: { name: email, value: john.doe@example.com }
+              - column: { name: age, valueNumeric: 24 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Alice }
+              - column: { name: last_name, value: Smith }
+              - column: { name: date_of_birth, valueDate: 2001-06-15 }
+              - column: { name: email, value: alice.smith@example.com }
+              - column: { name: age, valueNumeric: 23 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Bob }
+              - column: { name: last_name, value: Johnson }
+              - column: { name: date_of_birth, valueDate: 1999-10-10 }
+              - column: { name: email, value: bob.johnson@example.com }
+              - column: { name: age, valueNumeric: 25 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Emily }
+              - column: { name: last_name, value: Davis }
+              - column: { name: date_of_birth, valueDate: 2002-04-22 }
+              - column: { name: email, value: emily.davis@example.com }
+              - column: { name: age, valueNumeric: 22 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Michael }
+              - column: { name: last_name, value: Brown }
+              - column: { name: date_of_birth, valueDate: 2000-08-12 }
+              - column: { name: email, value: michael.brown@example.com }
+              - column: { name: age, valueNumeric: 24 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Sarah }
+              - column: { name: last_name, value: Wilson }
+              - column: { name: date_of_birth, valueDate: 2001-12-30 }
+              - column: { name: email, value: sarah.wilson@example.com }
+              - column: { name: age, valueNumeric: 23 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: David }
+              - column: { name: last_name, value: Lee }
+              - column: { name: date_of_birth, valueDate: 1998-03-03 }
+              - column: { name: email, value: david.lee@example.com }
+              - column: { name: age, valueNumeric: 26 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Jessica }
+              - column: { name: last_name, value: Martinez }
+              - column: { name: date_of_birth, valueDate: 2003-07-07 }
+              - column: { name: email, value: jessica.martinez@example.com }
+              - column: { name: age, valueNumeric: 21 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Daniel }
+              - column: { name: last_name, value: Taylor }
+              - column: { name: date_of_birth, valueDate: 1999-11-11 }
+              - column: { name: email, value: daniel.taylor@example.com }
+              - column: { name: age, valueNumeric: 25 }
+
+        - insert:
+            schemaName: adamant
+            tableName: students
+            columns:
+              - column: { name: first_name, value: Laura }
+              - column: { name: last_name, value: Anderson }
+              - column: { name: date_of_birth, valueDate: 2000-05-05 }
+              - column: { name: email, value: laura.anderson@example.com }
+              - column: { name: age, valueNumeric: 24 }
