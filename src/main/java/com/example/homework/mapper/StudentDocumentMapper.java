@@ -14,7 +14,7 @@ public class StudentDocumentMapper {
 
     public StudentDocument toDocument(Student student) {
         return StudentDocument.builder()
-                .id(student.getId().toString())
+                .id(student.getId() != null ? student.getId().toString() : null)
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
                 .email(student.getEmail())
