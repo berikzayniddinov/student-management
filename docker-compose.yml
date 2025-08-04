@@ -32,6 +32,18 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    networks:
+      - app-network
+
   app:
     build:
       context: .
@@ -43,6 +55,8 @@ services:
       elasticsearch:
         condition: service_healthy
       postgres:
+        condition: service_started
+      rabbitmq:
         condition: service_started
     env_file:
       - .env
